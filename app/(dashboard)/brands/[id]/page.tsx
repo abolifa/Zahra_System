@@ -89,7 +89,7 @@ const page = () => {
         }
     };
 
-    const handleImageUploadSuccess = (id: string) => {
+    const handleImageUploadSuccess = (id: string | null) => {
         form.setValue("mediaId", id);
     };
 
@@ -128,7 +128,7 @@ const page = () => {
                                 )}
                             />
 
-                            <ImageUploader onUploadSuccess={handleImageUploadSuccess} />
+                            <ImageUploader onUploadSuccess={handleImageUploadSuccess} existingImage={data?.mediaId} />
                         </div>
                         <Button disabled={loading} type="submit">Save</Button>
                     </form>

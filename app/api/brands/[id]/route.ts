@@ -40,9 +40,10 @@ export async function PUT(req: Request,
 // Delete a record
 export async function DELETE(req: Request,
     { params }: { params: { id: string } }) {
+    const { id } = await params;
     try {
         await prisma.brand.delete({
-            where: { id: await params.id },
+            where: { id },
             include: { media: true }
         });
         return NextResponse.json({ message: 'Record deleted' }, { status: 200 });

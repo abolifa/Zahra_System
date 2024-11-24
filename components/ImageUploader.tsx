@@ -1,15 +1,49 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Label } from "./ui/label";
-import { ImageUpIcon, LoaderPinwheel } from "lucide-react";
+import { ImageUpIcon, LoaderPinwheel, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
+import { Button } from "./ui/button";
 
 interface ImageUploaderProps {
-    onUploadSuccess: (id: string) => void;
+    onUploadSuccess: (id: string | null) => void;
+    existingImage?: string | null;
 }
 
-const ImageUploader: React.FC<ImageUploaderProps> = ({ onUploadSuccess }) => {
+const ImageUploader: React.FC<ImageUploaderProps> = ({ onUploadSuccess, existingImage }) => {
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [isUploading, setIsUploading] = useState<boolean>(false);
+
+    useEffect(() => {
+        const fetchImage = async () => {
+            if (!existingImage) return;
+
+            try {
+                const response = await fetch(`/api/media/${existingImage}`);
+                if (response.ok) {
+                    const { media } = await response.json(); // Extract the `media` object
+                    console.log("Fetched media data:", media);
+
+                    if (media && media.url) {
+                        setPreviewUrl(media.url); // Set the `url` to `previewUrl`
+                        console.log("Preview URL:", media.url);
+                    } else {
+                        console.error("Media URL is missing in the response.");
+                    }
+                } else {
+                    toast.error("Failed to load existing image.");
+                }
+            } catch (error) {
+                console.error("Error fetching existing image:", error);
+                toast.error("Failed to fetch existing image.");
+            }
+        };
+
+        fetchImage();
+    }, [existingImage]);
+
+
+    console.log("Preview URL:", previewUrl);
+
 
     const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -44,6 +78,11 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ onUploadSuccess }) => {
         }
     };
 
+    const handleDelete = () => {
+        setPreviewUrl(null);
+        onUploadSuccess(null);
+    };
+
     return (
         <div className="flex flex-col items-start justify-start gap-4">
             <Label>Upload Image</Label>
@@ -59,6 +98,16 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ onUploadSuccess }) => {
                             alt="Preview"
                             className="absolute object-contain w-full h-3/4 rounded-lg"
                         />
+                        <Button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleDelete();
+                            }}
+                            className="absolute top-2 right-2"
+                            variant={'destructive'}
+                        >
+                            <Trash2 />
+                        </Button>
                     </div>
                 ) : (
                     <>
