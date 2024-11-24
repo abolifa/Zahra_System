@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  CUSTOMER
+  SELLER
+  DELIVERY
+}
+
+model User {
+  id       String   @id @default(cuid())
+  name     String
+  email    String   @unique
+  phone    String
+  role     Role     @default(CUSTOMER)
+  password String
+  created  DateTime @default(now())
+  updated  DateTime @updatedAt
+}
+
+model Brand {
+  id      String   @id @default(cuid())
+  name    String
+  slug    String   @unique
+  mediaId String?
+  media   Media?   @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+  created DateTime @default(now())
+  updated DateTime @updatedAt
+}
+
+model Media {
+  id      String   @id @default(cuid())
+  url     String
+  type    String?
+  created DateTime @default(now())
+  updated DateTime @updatedAt
+  Brand   Brand[]
+}
