@@ -30,7 +30,7 @@ model Brand {
   name    String
   slug    String   @unique
   mediaId String?
-  media   Media?   @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+  media   Media?   @relation(fields: [mediaId], references: [id], onDelete: Cascade) // Cascade specified here
   created DateTime @default(now())
   updated DateTime @updatedAt
 }
@@ -41,5 +41,5 @@ model Media {
   type    String?
   created DateTime @default(now())
   updated DateTime @updatedAt
-  Brand   Brand[]
+  brands  Brand[] // No cascade specified here
 }

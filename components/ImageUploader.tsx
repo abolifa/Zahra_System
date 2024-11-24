@@ -103,7 +103,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ onUploadSuccess, existing
                                 e.stopPropagation();
                                 handleDelete();
                             }}
-                            className="absolute top-2 right-2"
+                            className="absolute top-2 right-2 z-50"
                             variant={'destructive'}
                         >
                             <Trash2 />

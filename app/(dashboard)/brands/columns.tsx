@@ -80,44 +80,20 @@ export const columns: ColumnDef<BrandWithMedia>[] = [
                 },
                 onMutate: async () => {
                     toast.loading("Deleting brand...", { id: "delete-brand" });
-
-                    await queryClient.cancelQueries({ queryKey: ["brands"] });
-                    const previousBrands = queryClient.getQueryData(["brands"]);
-
-                    queryClient.setQueryData(["brands"], (old: Brand[] | undefined) =>
-                        old?.filter((brand) => brand.id !== row.original.id)
-                    );
-
-                    return { previousBrands };
-                },
-                onError: (error, variables, context) => {
-                    toast.error("Failed to delete brand", { id: "delete-brand" });
-
-                    if (context?.previousBrands) {
-                        queryClient.setQueryData(["brands"], context.previousBrands);
-                    }
                 },
                 onSuccess: () => {
                     toast.success("Brand deleted successfully", { id: "delete-brand" });
                 },
                 onSettled: () => {
                     queryClient.invalidateQueries({ queryKey: ["brands"] });
+                    toast.dismiss("delete-brand");
                 },
             });
 
-            const handleEditClick = async () => {
-                await queryClient.prefetchQuery({
-                    queryKey: ["brand", row.original.id],
-                    queryFn: () =>
-                        api.get(`/brands/${row.original.id}`).then((res) => res.data),
-                });
-
-                router.push(`/brands/${row.original.id}`);
-            };
 
             return (
                 <div className="flex items-center justify-end mr-3 gap-2">
-                    <Button size="sm" variant="outline" onClick={handleEditClick}>
+                    <Button size="sm" variant="outline" onClick={() => router.push(`/brands/${row.original.id}`)}>
                         <Edit />
                         Edit
                     </Button>
